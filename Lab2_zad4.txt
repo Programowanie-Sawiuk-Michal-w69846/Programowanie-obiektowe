@@ -1,0 +1,48 @@
+using System;
+
+class Licz
+{
+    private int value;
+
+    public Licz(int poczatkowaWartosc)
+    {
+        value = poczatkowaWartosc;
+    }
+
+    public void Dodaj(int wartosc)
+    {
+        value += wartosc;
+    }
+
+
+    public void Odejmij(int wartosc)
+    {
+        value -= wartosc;
+    }
+
+    public void WypiszStan()
+    {
+        Console.WriteLine($"Wartość: {value}");
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Licz licz1 = new Licz(10);
+        Licz licz2 = new Licz(20);
+
+        licz1.Dodaj(5);
+        licz1.WypiszStan(); // Wartość: 15
+
+        licz2.Odejmij(7);
+        licz2.WypiszStan(); // Wartość: 13
+
+        licz1.Dodaj(10);
+        licz2.Odejmij(3);
+
+        licz1.WypiszStan(); // Wartość: 25
+        licz2.WypiszStan(); // Wartość: 10
+    }
+}

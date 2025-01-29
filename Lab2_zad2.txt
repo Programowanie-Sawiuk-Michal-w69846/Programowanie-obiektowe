@@ -1,0 +1,69 @@
+using System;
+
+class BankAccount
+{
+    // Pola prywatne
+    private decimal saldo;
+
+    // Właściwości
+    public decimal Saldo
+    {
+        get { return saldo; }
+    }
+
+    public string Wlasciciel { get; private set; }
+
+    // Konstruktor
+    public BankAccount(string wlasciciel, decimal poczatkoweSaldo)
+    {
+        if (poczatkoweSaldo < 0)
+        {
+            throw new ArgumentException("Początkowe saldo nie może być ujemne.");
+        }
+        Wlasciciel = wlasciciel;
+        saldo = poczatkoweSaldo;
+    }
+
+    // Metoda wpłaty
+    public void Wplata(decimal kwota)
+    {
+        if (kwota <= 0)
+        {
+            throw new ArgumentException("Kwota wpłaty musi być większa od zera.");
+        }
+        saldo += kwota;
+    }
+
+    // Metoda wypłaty
+    public void Wyplata(decimal kwota)
+    {
+        if (kwota <= 0)
+        {
+            throw new ArgumentException("Kwota wypłaty musi być większa od zera.");
+        }
+        if (kwota > saldo)
+        {
+            throw new InvalidOperationException("Niewystarczające środki na koncie.");
+        }
+        saldo -= kwota;
+    }
+}
+
+// Przykład użycia klasy
+class Program
+{
+    static void Main(string[] args)
+    {
+        try
+        {
+            BankAccount konto = new BankAccount("Jan Kowalski", 1000);
+            konto.Wplata(500);
+            konto.Wyplata(200);
+            Console.WriteLine($"Saldo: {konto.Saldo}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Błąd: {ex.Message}");
+        }
+    }
+}
