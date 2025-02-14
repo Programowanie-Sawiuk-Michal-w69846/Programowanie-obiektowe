@@ -1,0 +1,142 @@
+using System;
+using System.Collections.Generic;
+
+public interface IOsoba
+{
+    string Imie { get; set; }
+    string Nazwisko { get; set; }
+    string ZwrocPelnaNazwe();
+}
+
+public class Osoba : IOsoba
+{
+    public string Imie { get; set; }
+    public string Nazwisko { get; set; }
+
+    public Osoba(string imie, string nazwisko)
+    {
+        Imie = imie;
+        Nazwisko = nazwisko;
+    }
+
+    public string ZwrocPelnaNazwe()
+    {
+        return $"{Imie} {Nazwisko}";
+    }
+}
+
+public static class OsobaExtensions
+{
+    public static void WypiszOsoby(this List<IOsoba> listaOsob)
+    {
+        foreach (var osoba in listaOsob)
+        {
+            Console.WriteLine(osoba.ZwrocPelnaNazwe());
+        }
+    }
+
+    public static void PosortujOsobyPoNazwisku(this List<IOsoba> listaOsob)
+    {
+        listaOsob.Sort((os1, os2) => os1.Nazwisko.CompareTo(os2.Nazwisko));
+    }
+}
+
+public interface IStudent : IOsoba
+{
+    string Uczelnia { get; set; }
+    string Kierunek { get; set; }
+    int Rok { get; set; }
+    int Semestr { get; set; }
+    string WypiszPelnaNazweIUczelnie();
+}
+
+public class Student : IStudent
+{
+    public string Imie { get; set; }
+    public string Nazwisko { get; set; }
+    public string Uczelnia { get; set; }
+    public string Kierunek { get; set; }
+    public int Rok { get; set; }
+    public int Semestr { get; set; }
+
+    public Student(string imie, string nazwisko, string uczelnia, string kierunek, int rok, int semestr)
+    {
+        Imie = imie;
+        Nazwisko = nazwisko;
+        Uczelnia = uczelnia;
+        Kierunek = kierunek;
+        Rok = rok;
+        Semestr = semestr;
+    }
+
+    public string ZwrocPelnaNazwe()
+    {
+        return $"{Imie} {Nazwisko}";
+    }
+
+    public string WypiszPelnaNazweIUczelnie()
+    {
+        return $"{ZwrocPelnaNazwe()} – {Rok}{Semestr} {Kierunek} {Uczelnia}";
+    }
+}
+
+public class StudentWSIiZ : Student
+{
+    public StudentWSIiZ(string imie, string nazwisko, string kierunek, int rok, int semestr)
+        : base(imie, nazwisko, "WSIiZ", kierunek, rok, semestr)
+    {
+    }
+
+    public new string WypiszPelnaNazweIUczelnie()
+    {
+        return $"{ZwrocPelnaNazwe()} – {Rok}{Semestr} {Kierunek} WSIiZ";
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        // Zadanie 3a - Tworzenie osób
+        List<IOsoba> osoby = new List<IOsoba>
+        {
+            new Osoba("Jan", "Kowalski"),
+            new Osoba("Anna", "Nowak"),
+            new Osoba("Piotr", "Zieliński")
+        };
+
+        // Zadanie 3b - Wypisanie osób
+        osoby.WypiszOsoby();
+
+        // Zadanie 3c - Posortowanie osób po nazwisku
+        osoby.PosortujOsobyPoNazwisku();
+        Console.WriteLine("\nPosortowane osoby:");
+        osoby.WypiszOsoby();
+
+        // Zadanie 3d - Tworzenie studentów
+        List<IStudent> studenci = new List<IStudent>
+        {
+            new Student("Jan", "Kowalski", "WSIiZ", "Informatyka", 4, 2),
+            new Student("Anna", "Nowak", "WSIiZ", "Zarządzanie", 3, 1)
+        };
+
+        Console.WriteLine("\nStudenci:");
+        foreach (var student in studenci)
+        {
+            Console.WriteLine(student.WypiszPelnaNazweIUczelnie());
+        }
+
+        // Zadanie 3e - Tworzenie studentów WSIiZ
+        List<IStudent> studenciWSIiZ = new List<IStudent>
+        {
+            new StudentWSIiZ("Jan", "Kowalski", "Informatyka", 4, 2),
+            new StudentWSIiZ("Anna", "Nowak", "Zarządzanie", 3, 1)
+        };
+
+        Console.WriteLine("\nStudenci WSIiZ:");
+        foreach (var student in studenciWSIiZ)
+        {
+            Console.WriteLine(student.WypiszPelnaNazweIUczelnie());
+        }
+    }
+}

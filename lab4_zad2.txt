@@ -1,0 +1,116 @@
+using System;
+using System.Collections.Generic;
+
+class Program
+{
+    static void Main()
+    {
+        // Tworzenie uczniów
+        Uczen uczen1 = new Uczen("Jan", "Kowalski", "04250512345", "Szkoła Podstawowa nr 1", false);
+        Uczen uczen2 = new Uczen("Anna", "Nowak", "10120356789", "Szkoła Podstawowa nr 1", true);
+        Uczen uczen3 = new Uczen("Piotr", "Wiśniewski", "15071578901", "Szkoła Podstawowa nr 1", false);
+
+        // Tworzenie nauczyciela
+        Nauczyciel nauczyciel = new Nauczyciel("Marek", "Lis", "75010198765", "Szkoła Podstawowa nr 1", "Mgr");
+        nauczyciel.DodajUcznia(uczen1);
+        nauczyciel.DodajUcznia(uczen2);
+        nauczyciel.DodajUcznia(uczen3);
+
+        // Sprawdzenie kto może wracać sam
+        nauczyciel.WhichStudentCanGoHomeAlone(DateTime.Now);
+    }
+}
+
+class Osoba
+{
+    public string Imie { get; set; }
+    public string Nazwisko { get; set; }
+    public string Pesel { get; set; }
+
+    public Osoba(string imie, string nazwisko, string pesel)
+    {
+        Imie = imie;
+        Nazwisko = nazwisko;
+        Pesel = pesel;
+    }
+
+    public int GetAge()
+    {
+        int rok = int.Parse(Pesel.Substring(0, 2));
+        int miesiac = int.Parse(Pesel.Substring(2, 2));
+        int dzien = int.Parse(Pesel.Substring(4, 2));
+
+        if (miesiac > 20) rok += 2000;
+        else rok += 1900;
+
+        DateTime birthDate = new DateTime(rok, miesiac % 20, dzien);
+        int age = DateTime.Now.Year - birthDate.Year;
+
+        if (DateTime.Now.DayOfYear < birthDate.DayOfYear)
+            age--;
+
+        return age;
+    }
+
+    public string GetGender()
+    {
+        int genderDigit = int.Parse(Pesel.Substring(9, 1));
+        return genderDigit % 2 == 0 ? "Kobieta" : "Mężczyzna";
+    }
+
+    public virtual void GetEducationInfo() { }
+    public virtual string GetFullName() => $"{Imie} {Nazwisko}";
+    public virtual bool CanGoAloneToHome() => false;
+}
+
+class Uczen : Osoba
+{
+    public string Szkola { get; set; }
+    public bool MozeSamWracacDoDomu { get; set; }
+
+    public Uczen(string imie, string nazwisko, string pesel, string szkola, bool mozeSamWracac)
+        : base(imie, nazwisko, pesel)
+    {
+        Szkola = szkola;
+        MozeSamWracacDoDomu = mozeSamWracac;
+    }
+
+    public override void GetEducationInfo()
+    {
+        Console.WriteLine($"{GetFullName()} uczęszcza do {Szkola}");
+    }
+
+    public override bool CanGoAloneToHome()
+    {
+        return GetAge() >= 12 || MozeSamWracacDoDomu;
+    }
+}
+
+class Nauczyciel : Uczen
+{
+    public string TytulNaukowy { get; set; }
+    public List<Uczen> PodwladniUczniowie { get; set; } = new List<Uczen>();
+
+    public Nauczyciel(string imie, string nazwisko, string pesel, string szkola, string tytul)
+        : base(imie, nazwisko, pesel, szkola, true)
+    {
+        TytulNaukowy = tytul;
+    }
+
+    public void DodajUcznia(Uczen uczen)
+    {
+        PodwladniUczniowie.Add(uczen);
+    }
+
+    public void WhichStudentCanGoHomeAlone(DateTime dateToCheck)
+    {
+        Console.WriteLine("Uczniowie mogący wracać sami do domu:");
+        foreach (var uczen in PodwladniUczniowie)
+        {
+            if (uczen.CanGoAloneToHome())
+            {
+                Console.WriteLine(uczen.GetFullName());
+            }
+        }
+    }
+}
