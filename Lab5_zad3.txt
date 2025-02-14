@@ -1,0 +1,62 @@
+using System;
+using System.Collections.Generic;
+
+enum Kolor
+{
+    Czerwony,
+    Niebieski,
+    Zielony,
+    Żółty,
+    Fioletowy
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        List<Kolor> kolory = new List<Kolor>
+        {
+            Kolor.Czerwony,
+            Kolor.Niebieski,
+            Kolor.Zielony,
+            Kolor.Żółty,
+            Kolor.Fioletowy
+        };
+
+        Random random = new Random();
+        Kolor wylosowanyKolor = kolory[random.Next(kolory.Count)];
+
+        Console.WriteLine("Witaj w grze w zgadywanie kolorów!");
+        Console.WriteLine("Dostępne kolory to:");
+        foreach (var kolor in kolory)
+        {
+            Console.WriteLine(kolor);
+        }
+
+        string zgadywanyKolor;
+        while (true)
+        {
+            Console.Write("\nZgadnij kolor: ");
+            zgadywanyKolor = Console.ReadLine();
+
+            try
+            {
+                Kolor kolorUzytkownika = (Kolor)Enum.Parse(typeof(Kolor), zgadywanyKolor, true);
+
+                if (kolorUzytkownika == wylosowanyKolor)
+                {
+                    Console.WriteLine("Gratulacje! Odgadłeś kolor!");
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("To nie jest poprawny kolor. Spróbuj ponownie!");
+                }
+            }
+            catch (ArgumentException)
+            {
+                Console.WriteLine("Nieprawidłowy kolor! Podaj jeden z dostępnych kolorów.");
+            }
+        }
+    }
+}

@@ -1,0 +1,140 @@
+using System;
+using System.Collections.Generic;
+
+enum StatusZamowienia
+{
+    Oczekujące,
+    Przyjęte,
+    Zrealizowane,
+    Anulowane
+}
+
+class Program
+{
+    // Kolekcja do przechowywania zamówień: numer zamówienia jako klucz, lista produktów jako wartość
+    static Dictionary<int, (List<string> produkty, StatusZamowienia status)> zamowienia = new Dictionary<int, (List<string>, StatusZamowienia)>();
+
+    static void Main(string[] args)
+    {
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("Zarządzanie zamówieniami w sklepie:");
+            Console.WriteLine("1. Dodaj nowe zamówienie");
+            Console.WriteLine("2. Zmień status zamówienia");
+            Console.WriteLine("3. Wyświetl wszystkie zamówienia");
+            Console.WriteLine("4. Wyjdź");
+            Console.Write("Wybierz opcję: ");
+            
+            string opcja = Console.ReadLine();
+            switch (opcja)
+            {
+                case "1":
+                    DodajZamowienie();
+                    break;
+                case "2":
+                    ZmienStatusZamowienia();
+                    break;
+                case "3":
+                    WyswietlZamowienia();
+                    break;
+                case "4":
+                    return;
+                default:
+                    Console.WriteLine("Niepoprawna opcja, spróbuj ponownie.");
+                    break;
+            }
+
+            Console.WriteLine("Naciśnij dowolny klawisz, aby kontynuować...");
+            Console.ReadKey();
+        }
+    }
+
+    // Metoda dodająca zamówienie
+    static void DodajZamowienie()
+    {
+        Console.Write("Podaj numer zamówienia: ");
+        int numerZamowienia;
+        while (!int.TryParse(Console.ReadLine(), out numerZamowienia))
+        {
+            Console.Write("Niepoprawny numer zamówienia, spróbuj ponownie: ");
+        }
+
+        Console.WriteLine("Podaj listę produktów (wpisz 'koniec', aby zakończyć):");
+        List<string> produkty = new List<string>();
+        while (true)
+        {
+            Console.Write("Produkt: ");
+            string produkt = Console.ReadLine();
+            if (produkt.ToLower() == "koniec")
+                break;
+            produkty.Add(produkt);
+        }
+
+        if (produkty.Count == 0)
+        {
+            Console.WriteLine("Zamówienie musi zawierać przynajmniej jeden produkt.");
+            return;
+        }
+
+        zamowienia[numerZamowienia] = (produkty, StatusZamowienia.Oczekujące);
+        Console.WriteLine($"Zamówienie {numerZamowienia} zostało dodane.");
+    }
+
+    // Metoda zmieniająca status zamówienia
+    static void ZmienStatusZamowienia()
+    {
+        Console.Write("Podaj numer zamówienia, którego status chcesz zmienić: ");
+        int numerZamowienia;
+        while (!int.TryParse(Console.ReadLine(), out numerZamowienia))
+        {
+            Console.Write("Niepoprawny numer zamówienia, spróbuj ponownie: ");
+        }
+
+        if (!zamowienia.ContainsKey(numerZamowienia))
+        {
+            Console.WriteLine("Zamówienie o podanym numerze nie istnieje.");
+            return;
+        }
+
+        Console.WriteLine("Dostępne statusy:");
+        foreach (var status in Enum.GetValues(typeof(StatusZamowienia)))
+        {
+            Console.WriteLine($"{(int)status}. {status}");
+        }
+        Console.Write("Podaj numer nowego statusu: ");
+        int nowyStatusInt;
+        while (!int.TryParse(Console.ReadLine(), out nowyStatusInt) || !Enum.IsDefined(typeof(StatusZamowienia), nowyStatusInt))
+        {
+            Console.Write("Niepoprawny numer statusu, spróbuj ponownie: ");
+        }
+
+        StatusZamowienia nowyStatus = (StatusZamowienia)nowyStatusInt;
+        StatusZamowienia obecnyStatus = zamowienia[numerZamowienia].status;
+
+        if (obecnyStatus == nowyStatus)
+        {
+            Console.WriteLine("Zamówienie ma już taki status.");
+            return;
+        }
+
+        zamowienia[numerZamowienia] = (zamowienia[numerZamowienia].produkty, nowyStatus);
+        Console.WriteLine($"Status zamówienia {numerZamowienia} zmieniono na {nowyStatus}.");
+    }
+
+    // Metoda wyświetlająca wszystkie zamówienia i ich status
+    static void WyswietlZamowienia()
+    {
+        Console.WriteLine("Lista zamówień:");
+        if (zamowienia.Count == 0)
+        {
+            Console.WriteLine("Brak zamówień.");
+            return;
+        }
+
+        foreach (var zamowienie in zamowienia)
+        {
+            Console.WriteLine($"Zamówienie nr {zamowienie.Key}: Status - {zamowienie.Value.status}, Produkty - {string.Join(", ", zamowienie.Value.produkty)}");
+        }
+    }
+}
